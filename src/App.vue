@@ -1,28 +1,62 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Select
+      v-model="podId"
+    >
+      <option value="" selected disabled>-Select Option-</option>
+      <option
+        v-for="(item, index) in list['pods']"
+        :value="item.id"
+        :key="index"
+      >
+        {{ item.id }}
+      </option>
+    </Select>
+    <hr>
+    <Select
+      v-model="buildingId"
+    >
+      <option value="" selected disabled>-Select Option-</option>
+      <option
+        v-for="(item, index) in list['buildings']"
+        :value="item.id"
+        :key="index"
+      >
+        {{ item.id }}
+      </option>
+    </Select>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Select from "./components/Select.vue";
+import { getData, list } from "./baseAPI/withHooks";
+import { onBeforeMount, value } from 'vue-function-api'
+import { Promise } from 'q';
 
 export default {
-  name: 'app',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
-</script>
+    Select
+  },
+  setup(props) {
+    const podId = value('');
+    const buildingId = value('');
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+    onBeforeMount(async () => {
+      await Promise.all([
+        getData('pods', 'pods'),
+        getData('buildings', 'buildings')
+      ])
+    })
+
+    return {
+      podId,
+      buildingId,
+      list,
+      getData
+    }
+
+  }
+};
+</script>
